@@ -1,65 +1,118 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect, useMemo } from "react";
+import { supabase } from "@/lib/supabase";
+import { StatsBar } from "@/components/StatsBar";
+import { StylistGrid } from "@/components/StylistGrid";
+import { QuickBookFAB } from "@/components/QuickBookFAB";
+import { Scissors } from "lucide-react";
+import { Booking, Stylist, Service } from "@/lib/types";
+
+export default function Dashboard() {
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [stylists, setStylists] = useState<Stylist[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+
+      const { data: staffData } = await supabase.from('staff').select('*');
+      const { data: servicesData } = await supabase.from('services').select('*');
+      const { data: bookingsData } = await supabase.from('bookings').select('*');
+
+      if (staffData) setStylists(staffData);
+      if (servicesData) setServices(servicesData);
+      if (bookingsData) setBookings(bookingsData);
+
+      setLoading(false);
+    }
+
+    fetchData();
+
+    // Set up real-time subscription for bookings
+    const subscription = supabase
+      .channel('bookings_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, (payload) => {
+        fetchData(); // Simplest way to keep sync: refetch
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, []);
+
+  const stats = useMemo(() => {
+    const completedBookings = bookings.filter(b => b.status === 'Completed');
+    const totalCollection = completedBookings.reduce((sum, b) => {
+      const service = services.find(s => s.id === b.service_id);
+      return sum + (service?.price || 0);
+    }, 0);
+
+    const pendingBookingsCount = bookings.filter(b => b.status === 'Pending').length;
+
+    return { totalCollection, pendingBookingsCount };
+  }, [bookings, services]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 border-4 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-slate-500 font-bold">Loading Khata...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="min-h-screen bg-slate-50 pb-24">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 p-4 sticky top-0 z-40">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="bg-orange-600 p-2 rounded-lg">
+              <Scissors className="text-white" size={24} />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black text-slate-900 leading-none">SalonDost</h1>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Daily Khata</p>
+            </div>
+          </div>
+          <div className="bg-slate-100 px-3 py-1 rounded-full text-slate-600 font-bold text-sm">
+            Jan 28, 2026
+          </div>
+        </div>
+      </header>
+
+      <div className="p-4">
+        {/* Stats */}
+        <StatsBar
+          totalCollection={stats.totalCollection}
+          pendingBookings={stats.pendingBookingsCount}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+
+        {/* Section Title */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-slate-800">Queue Status</h2>
+          <span className="text-sm font-medium text-slate-500">Swipe → to see more</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+        {/* Grid */}
+        <StylistGrid
+          stylists={stylists}
+          bookings={bookings}
+          services={services}
+        />
+      </div>
+
+      {/* FAB */}
+      <QuickBookFAB
+        stylists={stylists}
+        services={services}
+      />
+    </main>
   );
 }
