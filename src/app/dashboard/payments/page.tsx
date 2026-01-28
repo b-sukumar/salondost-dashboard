@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Booking, Stylist, Service } from "@/lib/types";
-import { IndianRupee, Download, Calendar, User, Search, ArrowLeft } from "lucide-react";
+import { IndianRupee, Download, Calendar, User, Search, ArrowLeft, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { redirect } from "next/navigation";
@@ -13,6 +13,7 @@ import { toast } from "sonner";
 export default function PaymentsPage() {
     const [bookings, setBookings] = useState<(Booking & { staff_name: string; service_name: string; amount: number })[]>([]);
     const [totalRevenue, setTotalRevenue] = useState(0);
+    const [monthlyRevenue, setMonthlyRevenue] = useState(0);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -51,8 +52,18 @@ export default function PaymentsPage() {
             });
 
             setBookings(enrichedBookings);
+
+            // Calculate Total Revenue
             const total = enrichedBookings.reduce((sum, b) => sum + b.amount, 0);
             setTotalRevenue(total);
+
+            // Calculate Monthly Revenue (current calendar month)
+            const now = new Date();
+            const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+            const monthly = enrichedBookings
+                .filter(b => b.booking_date >= firstDayOfMonth)
+                .reduce((sum, b) => sum + b.amount, 0);
+            setMonthlyRevenue(monthly);
         }
 
         setLoading(false);
@@ -123,23 +134,40 @@ export default function PaymentsPage() {
                 </Button>
             </div>
 
-            {/* Revenue Summary Card */}
-            <Card className="border-none shadow-xl bg-orange-600 text-white rounded-[2rem] overflow-hidden">
-                <CardContent className="p-8 md:p-12 relative overflow-hidden">
-                    <div className="relative z-10">
-                        <span className="text-sm font-bold uppercase tracking-widest opacity-80">Total Revenue Collected</span>
-                        <div className="text-5xl md:text-7xl font-black mt-2 tracking-tighter">
-                            ₹{totalRevenue.toLocaleString('en-IN')}
+            {/* Revenue Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="border-none shadow-xl bg-orange-600 text-white rounded-[2rem] overflow-hidden">
+                    <CardContent className="p-8 md:p-10 relative overflow-hidden">
+                        <div className="relative z-10">
+                            <span className="text-sm font-bold uppercase tracking-widest opacity-80">This Month's Revenue</span>
+                            <div className="text-4xl md:text-5xl font-black mt-2 tracking-tighter">
+                                ₹{monthlyRevenue.toLocaleString('en-IN')}
+                            </div>
+                            <div className="flex items-center gap-2 mt-6 bg-white/10 w-fit px-4 py-2 rounded-full backdrop-blur-md">
+                                <TrendingUp size={16} />
+                                <span className="text-xs font-bold">Current month collection</span>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2 mt-6 bg-white/10 w-fit px-4 py-2 rounded-full backdrop-blur-md">
-                            <Calendar size={16} />
-                            <span className="text-sm font-bold">Historical data across all records</span>
+                        <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+                    </CardContent>
+                </Card>
+
+                <Card className="border-none shadow-xl bg-slate-900 text-white rounded-[2rem] overflow-hidden">
+                    <CardContent className="p-8 md:p-10 relative overflow-hidden">
+                        <div className="relative z-10">
+                            <span className="text-sm font-bold uppercase tracking-widest opacity-80">All-Time Collection</span>
+                            <div className="text-4xl md:text-5xl font-black mt-2 tracking-tighter">
+                                ₹{totalRevenue.toLocaleString('en-IN')}
+                            </div>
+                            <div className="flex items-center gap-2 mt-6 bg-white/10 w-fit px-4 py-2 rounded-full backdrop-blur-md">
+                                <Calendar size={16} />
+                                <span className="text-xs font-bold">Total historical collections</span>
+                            </div>
                         </div>
-                    </div>
-                    {/* Decorative element */}
-                    <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-                </CardContent>
-            </Card>
+                        <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+                    </CardContent>
+                </Card>
+            </div>
 
             {/* Transactions Table */}
             <div className="space-y-4">
