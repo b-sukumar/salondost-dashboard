@@ -1,18 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Scissors, LayoutDashboard, Users, LogOut, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
 
 const menuItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: "/" },
     { name: "Customers", icon: Users, href: "/customers" },
-    { name: "Staff", icon: Scissors, href: "/staff" }, // Future link
+    { name: "Payments", icon: Scissors, href: "/payments" }, // Example
 ];
 
 export function Sidebar() {
     const pathname = usePathname();
+    const router = useRouter();
+    const supabase = createClient();
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        toast.info("Signed out successfully");
+        router.push("/login");
+        router.refresh();
+    };
 
     return (
         <aside className="w-64 bg-slate-900 h-screen fixed left-0 top-0 flex flex-col text-white hidden lg:flex">
@@ -45,7 +56,10 @@ export function Sidebar() {
             </nav>
 
             <div className="p-4 border-t border-slate-800">
-                <button className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white w-full transition-all duration-200">
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white w-full transition-all duration-200"
+                >
                     <LogOut size={20} />
                     <span className="font-semibold text-sm">Logout</span>
                 </button>
