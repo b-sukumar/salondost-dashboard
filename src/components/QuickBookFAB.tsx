@@ -130,7 +130,12 @@ export function QuickBookFAB({ stylists, services }: QuickBookFABProps) {
                                     </SelectTrigger>
                                     <SelectContent>
                                         {services.map((s) => (
-                                            <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                                            <SelectItem key={s.id} value={s.id}>
+                                                <div className="flex justify-between w-full min-w-[200px]">
+                                                    <span>{s.name}</span>
+                                                    <span className="font-bold text-orange-600 ml-4">₹{s.price}</span>
+                                                </div>
+                                            </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>

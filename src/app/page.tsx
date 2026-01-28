@@ -5,7 +5,8 @@ import { supabase } from "@/lib/supabase";
 import { StatsBar } from "@/components/StatsBar";
 import { StylistGrid } from "@/components/StylistGrid";
 import { QuickBookFAB } from "@/components/QuickBookFAB";
-import { Scissors } from "lucide-react";
+import { Scissors, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Booking, Stylist, Service } from "@/lib/types";
 
 export default function Dashboard() {
@@ -14,24 +15,21 @@ export default function Dashboard() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchStaff = async () => {
+    const { data } = await supabase.from('staff').select('*');
+    if (data) setStaff(data);
+  };
+
+  async function fetchData() {
+    setLoading(true);
+    const { data: servicesData } = await supabase.from('services').select('*');
+    const { data: bookingsData } = await supabase.from('bookings').select('*');
+    if (servicesData) setServices(servicesData);
+    if (bookingsData) setBookings(bookingsData);
+    setLoading(false);
+  }
+
   useEffect(() => {
-    const fetchStaff = async () => {
-      const { data } = await supabase.from('staff').select('*');
-      if (data) setStaff(data);
-    };
-
-    async function fetchData() {
-      setLoading(true);
-
-      const { data: servicesData } = await supabase.from('services').select('*');
-      const { data: bookingsData } = await supabase.from('bookings').select('*');
-
-      if (servicesData) setServices(servicesData);
-      if (bookingsData) setBookings(bookingsData);
-
-      setLoading(false);
-    }
-
     fetchStaff();
     fetchData();
 
@@ -55,9 +53,13 @@ export default function Dashboard() {
       return sum + (service?.price || 0);
     }, 0);
 
-    const pendingBookingsCount = bookings.filter(b => b.status === 'Pending').length;
+    const pendingBookings = bookings.filter(b => b.status === 'Pending');
+    const pendingRevenue = pendingBookings.reduce((sum, b) => {
+      const service = services.find(s => s.id === b.service_id);
+      return sum + (service?.price || 0);
+    }, 0);
 
-    return { totalCollection, pendingBookingsCount };
+    return { totalCollection, pendingBookingsCount: pendingBookings.length, pendingRevenue };
   }, [bookings, services]);
 
   if (loading) {
@@ -85,8 +87,21 @@ export default function Dashboard() {
               <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">SalonDost Live</p>
             </div>
           </div>
-          <div className="bg-slate-100 px-3 py-1 rounded-full text-slate-600 font-bold text-sm">
-            Jan 28, 2026
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-full"
+              onClick={() => {
+                fetchStaff();
+                fetchData();
+              }}
+            >
+              <RefreshCw size={20} />
+            </Button>
+            <div className="bg-slate-100 px-3 py-1 rounded-full text-slate-600 font-bold text-sm">
+              Jan 28, 2026
+            </div>
           </div>
         </div>
       </header>
@@ -96,6 +111,7 @@ export default function Dashboard() {
         <StatsBar
           totalCollection={stats.totalCollection}
           pendingBookings={stats.pendingBookingsCount}
+          pendingRevenue={stats.pendingRevenue}
         />
 
         {/* Section Title */}

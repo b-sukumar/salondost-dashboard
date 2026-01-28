@@ -13,14 +13,35 @@ export function StylistGrid({ stylists, bookings, services }: StylistGridProps) 
         return services.find(s => s.id === serviceId)?.name || 'Unknown Service';
     };
 
+    const getInitials = (name: string) => {
+        return name.split(' ').map(n => n[0]).join('').toUpperCase();
+    };
+
+    const getAvatarColor = (name: string) => {
+        const colors = [
+            'bg-blue-500', 'bg-purple-500', 'bg-pink-500',
+            'bg-orange-500', 'bg-teal-500', 'bg-indigo-500'
+        ];
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return colors[Math.abs(hash) % colors.length];
+    };
+
     return (
         <ScrollArea className="w-full whitespace-nowrap rounded-md pb-4">
             <div className="flex w-max space-x-4 p-1">
                 {stylists.map((stylist) => (
                     <div key={stylist.id} className="w-[280px] shrink-0">
-                        <div className="bg-slate-100 p-3 rounded-t-lg border-x border-t border-slate-200 flex items-center justify-between mb-4">
-                            <h3 className="font-bold text-slate-800 text-lg">{stylist.name}</h3>
-                            <span className="bg-slate-200 text-slate-600 px-2 py-0.5 rounded text-xs font-bold">
+                        <div className="bg-white p-3 rounded-t-xl border-x border-t border-slate-200 flex items-center justify-between mb-4 shadow-sm">
+                            <div className="flex items-center gap-2">
+                                <div className={`h-10 w-10 ${getAvatarColor(stylist.name)} rounded-full flex items-center justify-center text-white font-bold border-2 border-white shadow-sm shrink-0`}>
+                                    {getInitials(stylist.name)}
+                                </div>
+                                <h3 className="font-bold text-slate-900 text-lg leading-tight">{stylist.name}</h3>
+                            </div>
+                            <span className="bg-orange-50 text-orange-600 px-2 py-1 rounded-lg text-xs font-black border border-orange-100">
                                 {bookings.filter(b => b.staff_id === stylist.id).length}
                             </span>
                         </div>
