@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { Customer } from "@/lib/types";
 import Link from "next/link";
 import { toast } from "sonner";
+import { redirect } from "next/navigation";
 
 export default function CustomersPage() {
     const [customers, setCustomers] = useState<Customer[]>([]);
@@ -17,6 +18,12 @@ export default function CustomersPage() {
     const [newCustomer, setNewCustomer] = useState({ name: "", phone: "" });
 
     useEffect(() => {
+        const checkUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) redirect('/login');
+        };
+        checkUser();
+
         fetchCustomers();
     }, []);
 

@@ -9,6 +9,7 @@ import { Scissors, RefreshCw, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Booking, Stylist, Service } from "@/lib/types";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default function Dashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -35,6 +36,12 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) redirect('/login');
+    };
+    checkUser();
+
     fetchStaff();
     fetchData();
 
