@@ -10,25 +10,29 @@ import { Booking, Stylist, Service } from "@/lib/types";
 
 export default function Dashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [stylists, setStylists] = useState<Stylist[]>([]);
+  const [staff, setStaff] = useState<Stylist[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchStaff = async () => {
+      const { data } = await supabase.from('staff').select('*');
+      if (data) setStaff(data);
+    };
+
     async function fetchData() {
       setLoading(true);
 
-      const { data: staffData } = await supabase.from('staff').select('*');
       const { data: servicesData } = await supabase.from('services').select('*');
       const { data: bookingsData } = await supabase.from('bookings').select('*');
 
-      if (staffData) setStylists(staffData);
       if (servicesData) setServices(servicesData);
       if (bookingsData) setBookings(bookingsData);
 
       setLoading(false);
     }
 
+    fetchStaff();
     fetchData();
 
     // Set up real-time subscription for bookings
@@ -102,7 +106,7 @@ export default function Dashboard() {
 
         {/* Grid */}
         <StylistGrid
-          stylists={stylists}
+          stylists={staff}
           bookings={bookings}
           services={services}
         />
@@ -110,7 +114,7 @@ export default function Dashboard() {
 
       {/* FAB */}
       <QuickBookFAB
-        stylists={stylists}
+        stylists={staff}
         services={services}
       />
     </main>
