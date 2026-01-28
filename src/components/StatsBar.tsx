@@ -1,14 +1,23 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp, Clock, Users, IndianRupee } from "lucide-react";
+import { TrendingUp, Clock, Users, IndianRupee, Heart } from "lucide-react";
 
 interface StatsBarProps {
     totalCollection: number; // Collected
     pendingRevenue: number;  // Pending
     queueCount: number;      // Number of pending bookings
     totalClients: number;    // Total customers
+    retentionRate: number;
+    newClientsPercent: number;
 }
 
-export function StatsBar({ totalCollection, pendingRevenue, queueCount, totalClients }: StatsBarProps) {
+export function StatsBar({
+    totalCollection,
+    pendingRevenue,
+    queueCount,
+    totalClients,
+    retentionRate,
+    newClientsPercent
+}: StatsBarProps) {
     const stats = [
         {
             label: "Total Today",
@@ -19,12 +28,30 @@ export function StatsBar({ totalCollection, pendingRevenue, queueCount, totalCli
             bg: "bg-green-50"
         },
         {
-            label: "Expected Today",
-            value: `₹${(totalCollection + pendingRevenue).toLocaleString('en-IN')}`,
-            subtext: "Total potential",
-            icon: TrendingUp,
-            color: "text-blue-600",
-            bg: "bg-blue-50"
+            label: "Retention",
+            value: `${retentionRate}%`,
+            subtext: "Returning clients",
+            icon: Heart,
+            color: "text-pink-600",
+            bg: "bg-pink-50",
+            extra: (
+                <div className="mt-3 space-y-1.5">
+                    <div className="flex justify-between text-[10px] font-black uppercase tracking-tighter">
+                        <span className="text-blue-500">New {newClientsPercent}%</span>
+                        <span className="text-pink-500">Old {100 - newClientsPercent}%</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
+                        <div
+                            className="h-full bg-blue-500 transition-all duration-500"
+                            style={{ width: `${newClientsPercent}%` }}
+                        />
+                        <div
+                            className="h-full bg-pink-500 transition-all duration-500"
+                            style={{ width: `${100 - newClientsPercent}%` }}
+                        />
+                    </div>
+                </div>
+            )
         },
         {
             label: "Queue Count",
@@ -60,6 +87,7 @@ export function StatsBar({ totalCollection, pendingRevenue, queueCount, totalCli
                                 {stat.value}
                             </div>
                             <p className="text-[11px] text-slate-400 font-medium">{stat.subtext}</p>
+                            {stat.extra}
                         </div>
                     </CardContent>
                 </Card>

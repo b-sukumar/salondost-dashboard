@@ -16,6 +16,8 @@ export default function Dashboard() {
   const [staff, setStaff] = useState<Stylist[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [customerCount, setCustomerCount] = useState(0);
+  const [returningPhoneNumbers, setReturningPhoneNumbers] = useState<Set<string>>(new Set());
+  const [retentionStats, setRetentionStats] = useState({ rate: 0, returning: 0, new: 0 });
   const [loading, setLoading] = useState(true);
 
   const fetchStaff = async () => {
@@ -25,12 +27,37 @@ export default function Dashboard() {
 
   async function fetchData() {
     setLoading(true);
+    const today = new Date().toISOString().split('T')[0];
+
+    // Fetch past completed bookings to identify returning customers
+    const { data: pastBookings } = await supabase
+      .from('bookings')
+      .select('client_phone')
+      .eq('status', 'Completed')
+      .lt('booking_date', today);
+
+    const pastClients = new Set(pastBookings?.map(b => b.client_phone) || []);
+    setReturningPhoneNumbers(pastClients);
+
     const { data: servicesData } = await supabase.from('services').select('*');
     const { data: bookingsData } = await supabase.from('bookings').select('*');
     const { count } = await supabase.from('customers').select('*', { count: 'exact', head: true });
 
     if (servicesData) setServices(servicesData);
-    if (bookingsData) setBookings(bookingsData);
+    if (bookingsData) {
+      setBookings(bookingsData);
+
+      // Calculate retention for today's bookings
+      const todayBookings = bookingsData.filter(b => b.booking_date === today);
+      if (todayBookings.length > 0) {
+        const returningToday = todayBookings.filter(b => pastClients.has(b.client_phone)).length;
+        const newToday = todayBookings.length - returningToday;
+        const rate = Math.round((returningToday / todayBookings.length) * 100);
+        setRetentionStats({ rate, returning: returningToday, new: newToday });
+      } else {
+        setRetentionStats({ rate: 0, returning: 0, new: 0 });
+      }
+    }
     if (count !== null) setCustomerCount(count);
     setLoading(false);
   }
@@ -122,6 +149,10 @@ export default function Dashboard() {
         pendingRevenue={stats.pendingRevenue}
         queueCount={stats.pendingBookingsCount}
         totalClients={stats.customerCount}
+        retentionRate={retentionStats.rate}
+        newClientsPercent={retentionStats.returning + retentionStats.new > 0
+          ? Math.round((retentionStats.new / (retentionStats.returning + retentionStats.new)) * 100)
+          : 0}
       />
 
       {/* Content Area */}
@@ -138,6 +169,7 @@ export default function Dashboard() {
           stylists={staff}
           bookings={bookings}
           services={services}
+          returningPhoneNumbers={returningPhoneNumbers}
         />
       </div>
 

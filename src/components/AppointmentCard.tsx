@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Booking, Status } from "@/lib/types";
-import { User, Scissors, MessageCircle, CheckCircle2, Trash2, Clock } from "lucide-react";
+import { User, Scissors, MessageCircle, CheckCircle2, Trash2, Clock, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ interface AppointmentCardProps {
     booking: Booking;
     serviceName: string;
     serviceAmount: number;
+    isReturning: boolean;
 }
 
 const statusColors: Record<Status, string> = {
@@ -19,7 +20,7 @@ const statusColors: Record<Status, string> = {
     'Pending': 'bg-gray-100 text-gray-800 border-gray-200',
 };
 
-export function AppointmentCard({ booking, serviceName, serviceAmount }: AppointmentCardProps) {
+export function AppointmentCard({ booking, serviceName, serviceAmount, isReturning }: AppointmentCardProps) {
     const sendWhatsAppThankYou = () => {
         const message = `Hi ${booking.client_name}! Thanks for visiting SalonDost today. Your total for ${serviceName} was ₹${serviceAmount}. We hope to see you again soon! ✨`;
         const encodedMessage = encodeURIComponent(message);
@@ -64,7 +65,18 @@ export function AppointmentCard({ booking, serviceName, serviceAmount }: Appoint
                             <User className="text-slate-400" size={20} />
                         </div>
                         <div>
-                            <h4 className="font-black text-slate-900 text-lg leading-none">{booking.client_name}</h4>
+                            <div className="flex items-center gap-2">
+                                <h4 className="font-black text-slate-900 text-lg leading-none">{booking.client_name}</h4>
+                                {isReturning ? (
+                                    <Badge className="bg-amber-100 text-amber-700 border-none text-[8px] font-black h-4 px-1.5 flex gap-0.5">
+                                        <Star size={8} fill="currentColor" /> RETURNING
+                                    </Badge>
+                                ) : (
+                                    <Badge className="bg-blue-100 text-blue-700 border-none text-[8px] font-black h-4 px-1.5">
+                                        NEW
+                                    </Badge>
+                                )}
+                            </div>
                             <div className="flex items-center gap-1.5 text-slate-400 mt-1.5">
                                 <Clock size={12} className="text-orange-500" />
                                 <span className="text-[10px] font-black uppercase tracking-widest">{booking.booking_time}</span>

@@ -7,9 +7,10 @@ interface StylistGridProps {
     stylists: Stylist[];
     bookings: Booking[];
     services: Service[];
+    returningPhoneNumbers: Set<string>;
 }
 
-export function StylistGrid({ stylists, bookings, services }: StylistGridProps) {
+export function StylistGrid({ stylists, bookings, services, returningPhoneNumbers }: StylistGridProps) {
     const getServiceName = (serviceId: string) => {
         return services.find(s => s.id === serviceId)?.name || 'Unknown Service';
     };
@@ -63,6 +64,7 @@ export function StylistGrid({ stylists, bookings, services }: StylistGridProps) 
                                         booking={booking}
                                         serviceName={getServiceName(booking.service_id)}
                                         serviceAmount={getServicePrice(booking.service_id)}
+                                        isReturning={returningPhoneNumbers.has(booking.client_phone)}
                                     />
                                 ))}
                             {bookings.filter(b => b.staff_id === stylist.id).length === 0 && (
