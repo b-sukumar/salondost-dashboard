@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { scissors, LayoutDashboard, Users, LogOut, Settings, Sparkles } from "lucide-react";
+import { Scissors, LayoutDashboard, Users, LogOut, Settings, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
