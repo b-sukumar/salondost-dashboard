@@ -7,7 +7,10 @@ export const supabase = createClient(
         auth: {
             persistSession: true,
             detectSessionInUrl: true,
-            flowType: 'pkce'
+            flowType: 'implicit'
+        },
+        global: {
+            headers: { 'x-my-custom-header': 'salondost' }
         }
     }
 )
