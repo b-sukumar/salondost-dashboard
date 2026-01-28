@@ -116,17 +116,17 @@ export function QuickBookFAB({ stylists, services }: QuickBookFABProps) {
                             />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-5">
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                                    <Scissors size={16} /> Service
+                                <label className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                    <Scissors size={18} className="text-orange-600" /> Service
                                 </label>
                                 <Select
                                     onValueChange={(value) => setFormData({ ...formData, serviceId: value })}
                                     value={formData.serviceId}
                                 >
-                                    <SelectTrigger className="h-12">
-                                        <SelectValue placeholder="Select" />
+                                    <SelectTrigger className="h-12 bg-white border-slate-200">
+                                        <SelectValue placeholder="Select service" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {services.map((s) => (
@@ -142,15 +142,15 @@ export function QuickBookFAB({ stylists, services }: QuickBookFABProps) {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                                    <Users size={16} /> Stylist
+                                <label className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                    <Users size={18} className="text-orange-600" /> Stylist
                                 </label>
                                 <Select
                                     onValueChange={(value) => setFormData({ ...formData, stylistId: value })}
                                     value={formData.stylistId}
                                 >
-                                    <SelectTrigger className="h-12">
-                                        <SelectValue placeholder="Select" />
+                                    <SelectTrigger className="h-12 bg-white border-slate-200">
+                                        <SelectValue placeholder="Select professional" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {stylists.map((s) => (
@@ -164,7 +164,7 @@ export function QuickBookFAB({ stylists, services }: QuickBookFABProps) {
 
                     <DrawerFooter className="pt-2">
                         <Button
-                            className="h-14 text-lg font-bold bg-orange-600 hover:bg-orange-700"
+                            className="h-14 mt-4 text-lg font-bold bg-orange-600 hover:bg-orange-700"
                             onClick={handleSubmit}
                             disabled={isSubmitting}
                         >
