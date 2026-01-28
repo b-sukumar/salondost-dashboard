@@ -54,22 +54,22 @@ export async function proxy(request: NextRequest) {
         }
     )
 
-    // const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser()
 
     // Protect routes. Redirect to /login if not authenticated.
     // Allow /login and /auth routes.
-    // const isLoginPage = request.nextUrl.pathname.startsWith('/login')
-    // const isAuthPage = request.nextUrl.pathname.startsWith('/auth')
-    // const isStaticFile = request.nextUrl.pathname.match(/\.(svg|png|jpg|jpeg|gif|webp)$/)
+    const isLoginPage = request.nextUrl.pathname.startsWith('/login')
+    const isAuthPage = request.nextUrl.pathname.startsWith('/auth')
+    const isStaticFile = request.nextUrl.pathname.match(/\.(svg|png|jpg|jpeg|gif|webp)$/)
 
-    // if (!user && !isLoginPage && !isAuthPage && !isStaticFile) {
-    //     return NextResponse.redirect(new URL('/login', request.url))
-    // }
+    if (!user && !isLoginPage && !isAuthPage && !isStaticFile) {
+        return NextResponse.redirect(new URL('/login', request.url))
+    }
 
     // Redirect to / if user is logged in but tries to access /login
-    // if (user && isLoginPage) {
-    //     return NextResponse.redirect(new URL('/', request.url))
-    // }
+    if (user && isLoginPage) {
+        return NextResponse.redirect(new URL('/', request.url))
+    }
 
     return response
 }
