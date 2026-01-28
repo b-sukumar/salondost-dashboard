@@ -34,7 +34,7 @@ export default function Dashboard() {
     // Set up real-time subscription for bookings
     const subscription = supabase
       .channel('bookings_changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, (payload) => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => {
         fetchData(); // Simplest way to keep sync: refetch
       })
       .subscribe();
