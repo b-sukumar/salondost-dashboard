@@ -10,7 +10,7 @@ import { toast } from "sonner";
 const menuItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: "/" },
     { name: "Customers", icon: Users, href: "/customers" },
-    { name: "Payments", icon: Scissors, href: "/payments" }, // Example
+    { name: "Payments", icon: Scissors, href: "/dashboard/payments" },
 ];
 
 export function Sidebar() {
