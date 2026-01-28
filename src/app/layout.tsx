@@ -6,9 +6,19 @@ import { Toaster } from "sonner";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
+export const viewport = {
+  themeColor: "#000000",
+};
+
 export const metadata: Metadata = {
   title: "SalonDost | Daily Khata",
   description: "Modern Daily Khata for Indian Salons",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "SalonDost",
+  },
 };
 
 export default function RootLayout({

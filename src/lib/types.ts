@@ -29,3 +29,11 @@ export interface DashboardStats {
     totalCollection: number;
     pendingBookingsCount: number;
 }
+
+export interface Customer {
+    id: string;
+    name: string;
+    phone: string;
+    salon_id?: string;
+    created_at?: string;
+}

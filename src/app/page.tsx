@@ -5,9 +5,10 @@ import { supabase } from "@/lib/supabase";
 import { StatsBar } from "@/components/StatsBar";
 import { StylistGrid } from "@/components/StylistGrid";
 import { QuickBookFAB } from "@/components/QuickBookFAB";
-import { Scissors, RefreshCw } from "lucide-react";
+import { Scissors, RefreshCw, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Booking, Stylist, Service } from "@/lib/types";
+import Link from "next/link";
 
 export default function Dashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -88,6 +89,15 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <Link href="/customers">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-full"
+              >
+                <Users size={20} />
+              </Button>
+            </Link>
             <Button
               variant="ghost"
               size="icon"
