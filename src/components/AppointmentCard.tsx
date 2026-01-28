@@ -68,11 +68,11 @@ export function AppointmentCard({ booking, serviceName, serviceAmount, isReturni
                             <div className="flex items-center gap-2">
                                 <h4 className="font-black text-slate-900 text-lg leading-none">{booking.client_name}</h4>
                                 {isReturning ? (
-                                    <Badge className="bg-amber-100 text-amber-700 border-none text-[8px] font-black h-4 px-1.5 flex gap-0.5">
+                                    <Badge className="bg-orange-100 text-orange-700 border-none text-[8px] font-black h-4 px-1.5 flex gap-0.5">
                                         <Star size={8} fill="currentColor" /> RETURNING
                                     </Badge>
                                 ) : (
-                                    <Badge className="bg-blue-100 text-blue-700 border-none text-[8px] font-black h-4 px-1.5">
+                                    <Badge className="bg-slate-900 text-white border-none text-[8px] font-black h-4 px-1.5">
                                         NEW
                                     </Badge>
                                 )}
