@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/lib/supabase";
 import { Stylist, Service } from "@/lib/types";
+import { toast } from "sonner";
 
 interface QuickBookFABProps {
     stylists: Stylist[];
@@ -59,8 +60,7 @@ export function QuickBookFAB({ stylists, services }: QuickBookFABProps) {
         setIsSubmitting(false);
 
         if (error) {
-            console.error("Error creating booking:", error);
-            alert("Failed to create booking. Please try again.");
+            toast.error("Failed to create booking. Please try again.");
             return;
         }
 
