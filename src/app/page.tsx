@@ -78,7 +78,7 @@ export default function Dashboard() {
             </div>
             <div>
               <h1 className="text-2xl font-black text-slate-900 leading-none">SalonDost</h1>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Daily Khata</p>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">SalonDost Live</p>
             </div>
           </div>
           <div className="bg-slate-100 px-3 py-1 rounded-full text-slate-600 font-bold text-sm">
