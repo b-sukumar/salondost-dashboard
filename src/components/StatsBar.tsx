@@ -37,16 +37,16 @@ export function StatsBar({
             extra: (
                 <div className="mt-3 space-y-1.5">
                     <div className="flex justify-between text-[10px] font-black uppercase tracking-tighter">
-                        <span className="text-blue-500">New {newClientsPercent}%</span>
-                        <span className="text-pink-500">Old {100 - newClientsPercent}%</span>
+                        <span className="text-slate-900">New {newClientsPercent}%</span>
+                        <span className="text-orange-600">Old {100 - newClientsPercent}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
                         <div
-                            className="h-full bg-blue-500 transition-all duration-500"
+                            className="h-full bg-slate-900 transition-all duration-500"
                             style={{ width: `${newClientsPercent}%` }}
                         />
                         <div
-                            className="h-full bg-pink-500 transition-all duration-500"
+                            className="h-full bg-orange-600 transition-all duration-500"
                             style={{ width: `${100 - newClientsPercent}%` }}
                         />
                     </div>
