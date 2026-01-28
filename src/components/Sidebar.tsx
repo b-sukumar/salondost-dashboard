@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Scissors, LayoutDashboard, Users, LogOut, Settings } from "lucide-react";
+import { scissors, LayoutDashboard, Users, LogOut, Settings, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ const menuItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: "/" },
     { name: "Customers", icon: Users, href: "/customers" },
     { name: "Payments", icon: Scissors, href: "/dashboard/payments" },
+    { name: "Marketing", icon: Sparkles, href: "/dashboard/marketing" },
 ];
 
 export function Sidebar() {
