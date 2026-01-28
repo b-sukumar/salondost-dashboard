@@ -2,5 +2,12 @@ import { createClient } from '@supabase/supabase-js'
 
 export const supabase = createClient(
     process.env.NEXT_PUBLIC_SB_URL!,
-    process.env.NEXT_PUBLIC_SB_ANON_KEY!
+    process.env.NEXT_PUBLIC_SB_ANON_KEY!,
+    {
+        auth: {
+            persistSession: true,
+            detectSessionInUrl: true,
+            flowType: 'pkce'
+        }
+    }
 )
