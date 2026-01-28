@@ -14,6 +14,7 @@ export default function Dashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [staff, setStaff] = useState<Stylist[]>([]);
   const [services, setServices] = useState<Service[]>([]);
+  const [customerCount, setCustomerCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const fetchStaff = async () => {
@@ -25,8 +26,11 @@ export default function Dashboard() {
     setLoading(true);
     const { data: servicesData } = await supabase.from('services').select('*');
     const { data: bookingsData } = await supabase.from('bookings').select('*');
+    const { count } = await supabase.from('customers').select('*', { count: 'exact', head: true });
+
     if (servicesData) setServices(servicesData);
     if (bookingsData) setBookings(bookingsData);
+    if (count !== null) setCustomerCount(count);
     setLoading(false);
   }
 
@@ -60,8 +64,13 @@ export default function Dashboard() {
       return sum + (service?.price || 0);
     }, 0);
 
-    return { totalCollection, pendingBookingsCount: pendingBookings.length, pendingRevenue };
-  }, [bookings, services]);
+    return {
+      totalCollection,
+      pendingBookingsCount: pendingBookings.length,
+      pendingRevenue,
+      customerCount
+    };
+  }, [bookings, services, customerCount]);
 
   if (loading) {
     return (
@@ -75,62 +84,49 @@ export default function Dashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-24">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 p-4 sticky top-0 z-40">
+    <main className="p-4 lg:p-10 max-w-7xl mx-auto">
+      {/* Welcome Area */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Today's Overview</h1>
+          <p className="text-slate-500 font-medium mt-1">Manage your salon's daily performance</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            className="rounded-xl border-slate-200 bg-white"
+            onClick={() => {
+              fetchStaff();
+              fetchData();
+            }}
+          >
+            <RefreshCw size={18} className="mr-2 text-slate-500" />
+            Sync Data
+          </Button>
+          <div className="bg-white border border-slate-200 px-4 py-2 rounded-xl text-slate-600 font-bold text-sm shadow-sm">
+            {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+          </div>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <StatsBar
+        totalCollection={stats.totalCollection}
+        pendingRevenue={stats.pendingRevenue}
+        queueCount={stats.pendingBookingsCount}
+        totalClients={stats.customerCount}
+      />
+
+      {/* Content Area */}
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="bg-orange-600 p-2 rounded-lg">
-              <Scissors className="text-white" size={24} />
-            </div>
-            <div>
-              <h1 className="text-2xl font-black text-slate-900 leading-none">SalonDost</h1>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">SalonDost Live</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/customers">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-full"
-              >
-                <Users size={20} />
-              </Button>
-            </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-full"
-              onClick={() => {
-                fetchStaff();
-                fetchData();
-              }}
-            >
-              <RefreshCw size={20} />
-            </Button>
-            <div className="bg-slate-100 px-3 py-1 rounded-full text-slate-600 font-bold text-sm">
-              Jan 28, 2026
-            </div>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">Queue Status</h2>
+          <div className="flex items-center gap-2 text-sm font-bold text-slate-400">
+            <span>Scroll Right</span>
+            <div className="w-10 h-0.5 bg-slate-200 rounded-full"></div>
           </div>
         </div>
-      </header>
 
-      <div className="p-4">
-        {/* Stats */}
-        <StatsBar
-          totalCollection={stats.totalCollection}
-          pendingBookings={stats.pendingBookingsCount}
-          pendingRevenue={stats.pendingRevenue}
-        />
-
-        {/* Section Title */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-slate-800">Queue Status</h2>
-          <span className="text-sm font-medium text-slate-500">Swipe → to see more</span>
-        </div>
-
-        {/* Grid */}
         <StylistGrid
           stylists={staff}
           bookings={bookings}

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-
+import { Sidebar, MobileNav } from "@/components/Sidebar";
 import { Toaster } from "sonner";
 
-const outfit = Outfit({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const viewport = {
   themeColor: "#000000",
@@ -28,8 +28,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${outfit.className} antialiased selection:bg-orange-100 selection:text-orange-900`}>
-        {children}
+      <body className={`${inter.className} antialiased selection:bg-orange-100 selection:text-orange-900 bg-gray-50`}>
+        <div className="lg:pl-64 min-h-screen">
+          <Sidebar />
+          <div className="pb-20 lg:pb-0">
+            {children}
+          </div>
+          <MobileNav />
+        </div>
         <Toaster position="top-center" richColors />
       </body>
     </html>

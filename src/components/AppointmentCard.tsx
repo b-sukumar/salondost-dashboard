@@ -5,6 +5,7 @@ import { User, Scissors, MessageCircle, CheckCircle2, Trash2, Clock } from "luci
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface AppointmentCardProps {
     booking: Booking;
@@ -54,30 +55,35 @@ export function AppointmentCard({ booking, serviceName }: AppointmentCardProps) 
     };
 
     return (
-        <Card className="mb-4 border-none shadow-md bg-white rounded-xl overflow-hidden hover:shadow-lg transition-shadow border-l-4 border-l-orange-500">
-            <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-slate-100 p-2 rounded-lg">
-                            <User className="text-slate-600" size={18} />
+        <Card className="border border-slate-200 shadow-sm bg-white rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300">
+            <CardContent className="p-5">
+                <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-slate-50 p-3 rounded-xl">
+                            <User className="text-slate-400" size={20} />
                         </div>
                         <div>
-                            <h4 className="font-black text-slate-900 text-lg leading-tight">{booking.client_name}</h4>
-                            <div className="flex items-center gap-1 text-slate-500 mt-0.5">
-                                <Clock size={12} />
-                                <span className="text-[10px] font-bold uppercase tracking-wider">{booking.booking_time}</span>
+                            <h4 className="font-black text-slate-900 text-lg leading-none">{booking.client_name}</h4>
+                            <div className="flex items-center gap-1.5 text-slate-400 mt-1.5">
+                                <Clock size={12} className="text-orange-500" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">{booking.booking_time}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 bg-orange-50/50 p-2 rounded-lg text-orange-700 mb-4 border border-orange-100/50">
-                    <Scissors size={14} className="shrink-0" />
-                    <span className="text-xs font-bold uppercase tracking-wider">{serviceName}</span>
+                <div className="inline-flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg text-slate-600 mb-5 border border-slate-100">
+                    <Scissors size={14} className="text-orange-600" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">{serviceName}</span>
                 </div>
 
-                <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
-                    <Badge className={`${statusColors[booking.status]} font-black text-[10px] uppercase tracking-tighter px-2 py-1 rounded-md border-none`}>
+                <div className="flex items-center justify-between gap-2 pt-4 border-t border-slate-100">
+                    <Badge className={cn(
+                        "font-black text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full border-none shadow-none",
+                        booking.status === 'Completed' ? "bg-green-100 text-green-700" :
+                            booking.status === 'In-Progress' ? "bg-blue-100 text-blue-700" :
+                                "bg-slate-100 text-slate-600"
+                    )}>
                         {booking.status}
                     </Badge>
 
@@ -86,29 +92,29 @@ export function AppointmentCard({ booking, serviceName }: AppointmentCardProps) 
                             <>
                                 <Button
                                     size="icon"
-                                    variant="outline"
-                                    className="h-9 w-9 text-slate-400 border-slate-200 hover:text-red-500 hover:border-red-200 hover:bg-red-50 rounded-lg transition-colors"
+                                    variant="ghost"
+                                    className="h-10 w-10 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                                     onClick={deleteBooking}
                                 >
-                                    <Trash2 size={18} />
+                                    <Trash2 size={20} />
                                 </Button>
                                 <Button
                                     size="sm"
-                                    className="h-9 px-4 bg-orange-600 hover:bg-orange-700 text-white font-black rounded-lg shadow-sm shadow-orange-200 flex gap-2"
+                                    className="h-10 px-5 bg-slate-900 hover:bg-black text-white font-black rounded-xl shadow-lg shadow-slate-200 flex gap-2 transition-all active:scale-95"
                                     onClick={markAsCompleted}
                                 >
-                                    <CheckCircle2 size={18} />
-                                    <span className="text-xs">DONE</span>
+                                    <CheckCircle2 size={18} className="text-green-400" />
+                                    <span className="text-xs">MARK DONE</span>
                                 </Button>
                             </>
                         ) : (
                             <Button
                                 size="icon"
                                 variant="ghost"
-                                className="h-9 w-9 text-slate-300 hover:text-red-500 rounded-lg"
+                                className="h-10 w-10 text-slate-200 hover:text-red-500 rounded-xl"
                                 onClick={deleteBooking}
                             >
-                                <Trash2 size={18} />
+                                <Trash2 size={20} />
                             </Button>
                         )}
                     </div>

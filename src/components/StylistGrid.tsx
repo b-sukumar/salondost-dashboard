@@ -1,6 +1,7 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Booking, Stylist, Service } from "@/lib/types";
 import { AppointmentCard } from "./AppointmentCard";
+import { Clock } from "lucide-react";
 
 interface StylistGridProps {
     stylists: Stylist[];
@@ -30,23 +31,26 @@ export function StylistGrid({ stylists, bookings, services }: StylistGridProps) 
     };
 
     return (
-        <ScrollArea className="w-full whitespace-nowrap rounded-md pb-4">
-            <div className="flex w-max space-x-4 p-1">
+        <ScrollArea className="w-full whitespace-nowrap rounded-2xl pb-4">
+            <div className="flex w-max space-x-6 p-1">
                 {stylists.map((stylist) => (
-                    <div key={stylist.id} className="w-[280px] shrink-0">
-                        <div className="bg-white p-3 rounded-t-xl border-x border-t border-slate-200 flex items-center justify-between mb-4 shadow-sm">
-                            <div className="flex items-center gap-2">
-                                <div className={`h-10 w-10 ${getAvatarColor(stylist.name)} rounded-full flex items-center justify-center text-white font-bold border-2 border-white shadow-sm shrink-0`}>
+                    <div key={stylist.id} className="w-[300px] shrink-0">
+                        <div className="bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between mb-6 shadow-sm">
+                            <div className="flex items-center gap-3">
+                                <div className={`h-12 w-12 ${getAvatarColor(stylist.name)} rounded-full flex items-center justify-center text-white font-bold border-4 border-white shadow-sm shrink-0`}>
                                     {getInitials(stylist.name)}
                                 </div>
-                                <h3 className="font-bold text-slate-900 text-lg leading-tight">{stylist.name}</h3>
+                                <div>
+                                    <h3 className="font-black text-slate-900 text-lg leading-tight">{stylist.name}</h3>
+                                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Staff On Duty</p>
+                                </div>
                             </div>
-                            <span className="bg-orange-50 text-orange-600 px-2 py-1 rounded-lg text-xs font-black border border-orange-100">
+                            <span className="bg-slate-50 text-slate-900 w-8 h-8 flex items-center justify-center rounded-full text-sm font-black border border-slate-100">
                                 {bookings.filter(b => b.staff_id === stylist.id).length}
                             </span>
                         </div>
 
-                        <div className="flex flex-col min-h-[400px]">
+                        <div className="flex flex-col min-h-[400px] gap-4">
                             {bookings
                                 .filter(b => b.staff_id === stylist.id)
                                 .map((booking) => (
@@ -57,8 +61,11 @@ export function StylistGrid({ stylists, bookings, services }: StylistGridProps) 
                                     />
                                 ))}
                             {bookings.filter(b => b.staff_id === stylist.id).length === 0 && (
-                                <div className="flex flex-col items-center justify-center p-8 bg-slate-50 border border-dashed border-slate-200 rounded-lg text-slate-400">
-                                    <span className="text-sm">No bookings yet</span>
+                                <div className="flex flex-col items-center justify-center p-12 bg-white border border-dashed border-slate-200 rounded-2xl text-slate-400 shadow-sm">
+                                    <div className="bg-slate-50 p-4 rounded-full mb-3">
+                                        <Clock size={24} className="text-slate-200" />
+                                    </div>
+                                    <span className="text-sm font-bold tracking-tight">No active bookings</span>
                                 </div>
                             )}
                         </div>
