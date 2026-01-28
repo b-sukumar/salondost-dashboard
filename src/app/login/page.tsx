@@ -5,12 +5,11 @@ import { useRouter } from "next/navigation";
 import { Scissors, Mail, Lock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createClient } from "@/utils/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
 export default function LoginPage() {
     const router = useRouter();
-    const supabase = createClient();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         email: "",

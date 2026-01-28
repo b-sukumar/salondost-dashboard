@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Scissors, LayoutDashboard, Users, LogOut, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { createClient } from "@/utils/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
 const menuItems = [
@@ -16,7 +16,6 @@ const menuItems = [
 export function Sidebar() {
     const pathname = usePathname();
     const router = useRouter();
-    const supabase = createClient();
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
