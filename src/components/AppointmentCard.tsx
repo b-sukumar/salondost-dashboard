@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 interface AppointmentCardProps {
     booking: Booking;
     serviceName: string;
+    serviceAmount: number;
 }
 
 const statusColors: Record<Status, string> = {
@@ -18,11 +19,11 @@ const statusColors: Record<Status, string> = {
     'Pending': 'bg-gray-100 text-gray-800 border-gray-200',
 };
 
-export function AppointmentCard({ booking, serviceName }: AppointmentCardProps) {
-    const sendWhatsAppReminder = () => {
-        const message = `Hi ${booking.client_name}, this is a reminder for your ${serviceName} at SalonDost today at ${booking.booking_time}. See you soon!`;
+export function AppointmentCard({ booking, serviceName, serviceAmount }: AppointmentCardProps) {
+    const sendWhatsAppThankYou = () => {
+        const message = `Hi ${booking.client_name}! Thanks for visiting SalonDost today. Your total for ${serviceName} was ₹${serviceAmount}. We hope to see you again soon! ✨`;
         const encodedMessage = encodeURIComponent(message);
-        const whatsappUrl = `https://wa.me/${booking.client_phone}?text=${encodedMessage}`;
+        const whatsappUrl = `https://wa.me/${booking.client_phone.replace(/\D/g, '')}?text=${encodedMessage}`;
         window.open(whatsappUrl, '_blank');
     };
 
@@ -108,14 +109,24 @@ export function AppointmentCard({ booking, serviceName }: AppointmentCardProps) 
                                 </Button>
                             </>
                         ) : (
-                            <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-10 w-10 text-slate-200 hover:text-red-500 rounded-xl"
-                                onClick={deleteBooking}
-                            >
-                                <Trash2 size={20} />
-                            </Button>
+                            <div className="flex gap-2">
+                                <Button
+                                    size="sm"
+                                    className="h-10 px-4 bg-[#25D366] hover:bg-[#20ba5a] text-white font-black rounded-xl shadow-lg shadow-green-100 flex gap-2 transition-all active:scale-95 border-none"
+                                    onClick={sendWhatsAppThankYou}
+                                >
+                                    <MessageCircle size={18} fill="currentColor" />
+                                    <span className="text-xs">SEND THANKS</span>
+                                </Button>
+                                <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="h-10 w-10 text-slate-200 hover:text-red-500 rounded-xl"
+                                    onClick={deleteBooking}
+                                >
+                                    <Trash2 size={20} />
+                                </Button>
+                            </div>
                         )}
                     </div>
                 </div>

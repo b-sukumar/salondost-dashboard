@@ -14,6 +14,10 @@ export function StylistGrid({ stylists, bookings, services }: StylistGridProps) 
         return services.find(s => s.id === serviceId)?.name || 'Unknown Service';
     };
 
+    const getServicePrice = (serviceId: string) => {
+        return services.find(s => s.id === serviceId)?.price || 0;
+    };
+
     const getInitials = (name: string) => {
         return name.split(' ').map(n => n[0]).join('').toUpperCase();
     };
@@ -58,6 +62,7 @@ export function StylistGrid({ stylists, bookings, services }: StylistGridProps) 
                                         key={booking.id}
                                         booking={booking}
                                         serviceName={getServiceName(booking.service_id)}
+                                        serviceAmount={getServicePrice(booking.service_id)}
                                     />
                                 ))}
                             {bookings.filter(b => b.staff_id === stylist.id).length === 0 && (
